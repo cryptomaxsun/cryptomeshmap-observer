@@ -1,0 +1,15 @@
+# Gessaman Observer Serial Console template for Crypto Mesh Map
+# Replace YOUR_IATA, YOUR_USERNAME, YOUR_OBSERVER_TOKEN and regional radio preset before pasting.
+
+set radio.freq 869.618,62.5,8,8
+set radio.tx 22
+set station.iata YOUR_IATA
+
+set mqtt1.url mqtt://cryptomeshmap.com:1883
+set mqtt1.user YOUR_USERNAME
+set mqtt1.pass YOUR_OBSERVER_TOKEN
+set mqtt1.topic meshcore/{IATA}/{PUBLIC_KEY}
+set mqtt1.enable true
+
+save
+reboot
