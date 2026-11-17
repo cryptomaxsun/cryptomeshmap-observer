@@ -1,0 +1,16 @@
+[Unit]
+Description=Crypto Mesh Map USB/BLE Companion HTTP Observer Bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/opt/cryptomeshmap-observer
+Environment="CMM_OBSERVER_TOKEN=YOUR_OBSERVER_TOKEN"
+ExecStart=/usr/bin/python3 /opt/cryptomeshmap-observer/companion-http-observer.py --serial /dev/ttyUSB0 --region OZH
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

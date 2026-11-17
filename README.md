@@ -12,7 +12,9 @@ Official client tools and gateway setup guide for **[Crypto Mesh Map](https://cr
 ## What is included in this repository
 
 1. **`meshcore-telemetry-agent.py`** — Python agent that reads battery voltage, temperature, and external **BMP280 / BME280** weather telemetry (temperature, humidity, pressure) from a local MeshCore Companion (via USB Serial or Bluetooth LE) or remote Repeater/RoomServer over LoRa, and publishes it to `https://cryptomeshmap.com/api/observer/telemetry`.
-2. **`examples/gessaman-mqtt-commands.txt`** — Ready-to-use Serial Console command template to connect a **Gessaman MQTT Observer** gateway to `mqtt://cryptomeshmap.com:1883`.
+2. **`companion-http-observer.py`** — USB/BLE Companion HTTP Observer bridge for boards without Wi-Fi (such as **Heltec T114** or **RAK4631**). Listens to `RX_LOG_DATA` radio frames and forwards them over HTTPS to `https://cryptomeshmap.com/api/observer/ingest`.
+3. **`examples/gessaman-mqtt-commands.txt`** — Ready-to-use Serial Console command template to connect a **Gessaman MQTT Observer** gateway to `mqtt://cryptomeshmap.com:1883`.
+4. **`examples/cmm-telemetry.service` & `examples/cmm-observer.service`** — `systemd` unit files for 24/7 autostart on Raspberry Pi / Linux.
 
 ---
 
@@ -66,6 +68,31 @@ To connect over Bluetooth LE instead of USB, use `--ble XX:XX:XX:XX:XX:XX` (and 
 You can also pass your Observer token via environment variable instead of interactive prompt:
 ```bash
 export CMM_OBSERVER_TOKEN="your_observer_token_here"
+```
+
+---
+
+## 3. Run a USB/BLE Companion as an HTTP Observer (`companion-http-observer.py`)
+
+If your board does not have Wi-Fi (e.g., **nRF52840 / Heltec T114 / RAK4631**), you can connect a regular **MeshCore Companion** to a PC or Raspberry Pi and forward heard LoRa frames (`RX_LOG_DATA`) over HTTPS:
+
+```bash
+export CMM_OBSERVER_TOKEN="your_observer_token_here"
+python companion-http-observer.py --serial /dev/ttyUSB0 --region OZH
+```
+
+---
+
+## 4. 24/7 Autostart on Raspberry Pi / Linux (`systemd`)
+
+1. Copy the repository to `/opt/cryptomeshmap-observer` and install `meshcore==2.3.17`.
+2. Copy `examples/cmm-telemetry.service` or `examples/cmm-observer.service` to `/etc/systemd/system/`.
+3. Replace `YOUR_OBSERVER_TOKEN`, serial port, and `--region`, then run:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now cmm-observer
+sudo journalctl -u cmm-observer -f
 ```
 
 ---
